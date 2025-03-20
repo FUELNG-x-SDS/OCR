@@ -21,14 +21,11 @@ def clean_time1(time_str):
 
     time_str = time_str.replace(" LT", "").replace("LT", "").strip()
 
-    # Correct date format if needed
     if len(time_str) >= 10 and not time_str[4] == '-':
         time_str = time_str[:4] + '-' + time_str[4:6] + '-' + time_str[6:]
 
-    # Normalize spacing
     time_str = re.sub(r'\s+', ' ', time_str)
 
-    # Add space between date and time if missing.
     if len(time_str) > 10 and not time_str[10] == " ":
         time_str = time_str[:10] + " " + time_str[10:]
 
@@ -174,17 +171,14 @@ def clean_time3(time_str):
         return "0000-01-01 00:00"
     
 def calculate_difference(df, started_col, completed_col, duration_col):
-    """
-    Calculates the time difference between 'started' and 'completed' columns
-    and adds a 'duration' column to the DataFrame.
-    """
-    df[duration_col] = ""  # Initialize the duration column with blanks
+
+    df[duration_col] = "" 
 
     for index, row in df.iterrows():
         started_str = row[started_col]
         completed_str = row[completed_col]
 
-        if started_str and completed_str:  # Check if both are not blank
+        if started_str and completed_str:  
             try:
                 started_datetime = datetime.strptime(started_str, "%Y-%m-%d %H:%M")
                 completed_datetime = datetime.strptime(completed_str, "%Y-%m-%d %H:%M")
@@ -195,6 +189,56 @@ def calculate_difference(df, started_col, completed_col, duration_col):
         else:
           df.loc[index, duration_col] = ""
     return df
+
+def duration_to_minutes(duration_str):
+            if pd.isna(duration_str):
+                return 0
+            h, m, s = map(int, duration_str.split(':'))
+            return h * 60 + m + s / 60
+
+def generic_vertical_graph(filepath):
+
+    try:
+        df = pd.read_excel(filepath)  # Use read_excel for Excel files
+
+        df['Duration_minutes'] = df['Duration'].apply(duration_to_minutes)
+
+        # Plotting
+        plt.figure(figsize=(10, 8))
+        plt.bar(df['Activity'], df['Duration_minutes'], color='skyblue')
+        plt.ylabel('Duration (minutes)')
+        plt.xlabel('Activity')
+        plt.title('Activity Duration')
+        plt.xticks(rotation=90)
+        plt.tight_layout()
+        plt.show()
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {filepath}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def generic_horizontal_graph(filepath):
+
+    try:
+        df = pd.read_excel(filepath)
+
+        df['Duration_minutes'] = df['Duration'].apply(duration_to_minutes)
+
+        # Plotting
+        plt.figure(figsize=(10, 8))
+        plt.barh(df['Activity'], df['Duration_minutes'], color='skyblue')
+        plt.xlabel('Duration (minutes)')
+        plt.ylabel('Activity')
+        plt.title('Activity Duration')
+        plt.gca().invert_yaxis() 
+        plt.tight_layout()
+        plt.show()
+
+    except FileNotFoundError:
+        print(f"Error: File not found at {filepath}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def OCR_table(file_path):
     pipeline = create_pipeline(pipeline="table_recognition")
@@ -215,6 +259,9 @@ def OCR_table(file_path):
     df = calculate_difference(df, 'Started', 'Completod', 'Duration')
     print(df)
     df.to_excel(excel_path, index=False)
+    return excel_path
     
 outputfile = "example2.png"
-table = OCR_table(outputfile)
+excel_path = OCR_table(outputfile)
+generic_vertical_graph(excel_path)
+generic_horizontal_graph(excel_path)

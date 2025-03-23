@@ -1,0 +1,14 @@
+# Ignore the output folder
+output/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment folders
+venv/
+env/
+
+# Ignore IDE configuration files
+.vscode/
+.idea/

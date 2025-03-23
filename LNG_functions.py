@@ -261,7 +261,7 @@ def OCR_table(file_path):
     df.to_excel(excel_path, index=False)
     return excel_path
     
-outputfile = "example2.png"
-excel_path = OCR_table(outputfile)
-generic_vertical_graph(excel_path)
-generic_horizontal_graph(excel_path)
+# outputfile = "example2.png"
+# excel_path = OCR_table(outputfile)
+# generic_vertical_graph(excel_path)
+# generic_horizontal_graph(excel_path)

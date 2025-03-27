@@ -1,4 +1,4 @@
-# ABS-simulation
+# Gradio Dashboard
 
 ## To-do's
 - [X] Create gradio UI
@@ -7,6 +7,7 @@
 - [ ] Individual report: Layout & summary functionality.
 - [ ] Data generation: Create fake data **THAT MAKES SENSE**.
 - [ ] Yearly report: Layout & graphing functionality.
+- [ ] **Define new functions for noon-report**
 - [ ] Deploy to cloud (if needed).
 
 Proposed UI simulation workflow: 

@@ -1,7 +1,12 @@
 # ABS-simulation
 
 ## To-do's
-- [ ] Create gradio UI for individual reports.
+- [X] Create gradio UI
+- [ ] CSV extraction: Have functions to gain data from csv or pdf or png --> 2 types of csv format they work on.
+- [ ] CSV extraction: Connect to a database or a centralised csv (if preferred).
+- [ ] Individual report: Layout & summary functionality.
+- [ ] Data generation: Create fake data **THAT MAKES SENSE**.
+- [ ] Yearly report: Layout & graphing functionality.
 - [ ] Deploy to cloud (if needed).
 
 Proposed UI simulation workflow: 

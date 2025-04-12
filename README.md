@@ -2,10 +2,14 @@
 
 ## To-do's
 
-- [ ] Clean up requirements.txt.
-- [ ] Create gradio UI for individual report tab.
-- [ ] Create gradio UI for yearly report tab.
-- [ ] Create gradio UI for weekly report tab (not required).
+☑️ Clean up requirements.txt
+☑️ Create gradio UI
+- [ ] CSV extraction: Have functions to gain data from csv or pdf or png --> 2 types of csv format they work on.
+- [ ] CSV extraction: Connect to a database or a centralised csv (if preferred).
+- [ ] Individual report: Layout & summary functionality.
+- [ ] Data generation: Create fake data **THAT MAKES SENSE**.
+- [ ] Yearly report: Layout & graphing functionality.
+- [ ] **Define new functions for noon-report**
 - [ ] Deploy to cloud (if needed).
 
 Proposed UI simulation workflow:

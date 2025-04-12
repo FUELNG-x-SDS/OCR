@@ -1,9 +1,9 @@
-common==0.1.2 #
-dual==0.1.0 #
-tight==0.1.0 #
+common==0.1.2
+dual==0.1.0
+tight==0.1.0
 DateTime==5.5
 gradio==5.22.0
-jsons==1.6.3
-paddlex==3.0.0rc0 #paddlex==2.1.0
+jsons==1.6.3 
+paddlex @ https://paddle-model-ecology.bj.bcebos.com/paddlex/whl/paddlex-3.0.0rc0-py3-none-any.whl #paddlex==3.0.0rc0
 paddlepaddle==3.0.0rc0 #2.6.2 
-paddle==1.0.1 #
+paddle==1.0.1

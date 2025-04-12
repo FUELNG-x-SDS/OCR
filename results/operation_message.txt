@@ -1,5 +1,0 @@
-LNG Bunker:
-Receiving vessel: [Bulk carriers, Container ships, Tankers, Ro-Ro ships]
-Date: [dd/mm/yyyy]
-Port: [xxxx]
-Delivery location: [xxxxxxxxxxx]

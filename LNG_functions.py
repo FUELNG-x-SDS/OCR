@@ -125,7 +125,7 @@ def clean_time3(time_str):
     if original_time_str == "-" or re.search(r"[^\x00-\x7F]", original_time_str):
         return ""  # Return blank for missing values and special chars
 
-    time_str = time_str.replace(" LT", "").replace("LT", "").strip()
+    time_str = time_str.replace(" LT", "").replace("LT", "").replace("L", "").strip()
 
     # Correct date format if needed
     if len(time_str) >= 8 and not time_str[4] == '-' and not time_str[7] == '-' and time_str[6] == '-':
@@ -246,20 +246,32 @@ def OCR_table(file_path):
     output = pipeline.predict(
         input=file_path)
     
-    excel_path = "./output/" + os.path.splitext(os.path.basename(file_path))[0] +"/" + os.path.splitext(os.path.basename(file_path))[0] + ".xlsx"
+    output_dir = os.path.abspath("./output/")
+    excel_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".xlsx")
+
+    # Ensure directory exists
+    os.makedirs(output_dir, exist_ok=True)
 
     for res in output:
-        res.save_to_xlsx("./output/")
-        res.save_to_json("./output/", ensure_ascii=True)
+            res.save_to_xlsx(excel_path)
+            # res.save_to_json(json_path, ensure_ascii=True)
 
+    # Use pandas to read Excel file skipping first rows skiprows=[0,1]
     df = pd.read_excel(excel_path)
     print(df)
-    df['Completod'] = df['Completod'].apply(clean_time3)
+    
+    # Ensuring headers are correct
+    correct_headers = ['Activity EOSP', 'Started', 'Completed']
+    df.columns = correct_headers
+
+    # Cleaning of data
+    df['Completed'] = df['Completed'].apply(clean_time3)
     df['Started'] = df['Started'].apply(clean_time3)
-    df = calculate_difference(df, 'Started', 'Completod', 'Duration')
+    df = calculate_difference(df, 'Started', 'Completed', 'Duration')
+
     print(df)
     df.to_excel(excel_path, index=False)
-    return excel_path
+    return excel_path, df
     
 # outputfile = "example2.png"
 # excel_path = OCR_table(outputfile)

@@ -4,6 +4,8 @@
 - LNG_prototype_postgress_upload.py
 - LNG_prototype_query.py
 
+MAKE SURE TO DOWNLOAD IMAGEMAGICK FOR PDF CONVERSION
+
 LNG_prototype.py
 -Only takes a PDF (use mock data from turag)
 >Takes in PDF, OCR operation, Output as excel

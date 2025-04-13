@@ -1,6 +1,8 @@
 import gradio as gr
 import os
 import pandas as pd
+import plotly.express as px
+import random
 
 
 from LNG_functions import OCR_table
@@ -64,9 +66,6 @@ def save_db():
     print("Save to db clicked")
 
 
-def annual_query():
-    pass
-
 ############################################################################
 # UI elements
 with gr.Blocks() as demo:
@@ -95,7 +94,44 @@ with gr.Blocks() as demo:
         gr.Markdown("# Yearly Review")
 
         # Define the inputs for yearly review
-        gr.Interface(fn=annual_query)
+        dropdown_count = gr.State(2)
+        with gr.Row():
+            with gr.Column():
+                add_query = gr.Button("Add Query")
+                add_query.click(lambda x: x + 1, dropdown_count, dropdown_count)
+            with gr.Column():
+                remove_query = gr.Button("Remove Query")
+                remove_query.click(lambda x: x - 1, dropdown_count, dropdown_count)
 
+        @gr.render(inputs=dropdown_count)
+        def render_count(count):
+            vessels = []
+            years = []
+            for i in range(count):
+                vessel_radio = gr.Radio(["Bellina", "Venosa"], key=f"vessel-{i}", label="Comparing")
+                year_radio = gr.Radio(["2021", "2022", "2023", "2024"], key=f"year-{i}", label="of year")
+                vessels.append(vessel_radio)
+                years.append(year_radio)
+
+            def submit_query(data):
+                for vessel, year in zip(vessels, years):
+                    # Pass the query to database
+                    print(data[vessel], data[year])
+
+                    # Then output the graphs
+                    
+                    # Generate random data for the bar graph
+                    data = {"Category": ["pre-bunkering", "post-bunkering", "post-bunkering with waiting time"],
+                            "Value": [random.randint(1, 24) for _ in range(3)]}
+                    df = pd.DataFrame(data)
+                    fig = px.bar(df, x="Category", y="Value", title="Random Bar Graph")
+                    return fig
+
+
+            submit_btn.click(fn=submit_query, 
+                             inputs=set(vessels+years), 
+                             outputs=[gr.Plot()])
+
+        submit_btn = gr.Button("Submit Query")
         
 demo.launch()

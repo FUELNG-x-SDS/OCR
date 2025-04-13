@@ -7,3 +7,4 @@ jsons==1.6.3
 paddlex @ https://paddle-model-ecology.bj.bcebos.com/paddlex/whl/paddlex-3.0.0rc0-py3-none-any.whl #paddlex==3.0.0rc0
 paddlepaddle==3.0.0rc0 #2.6.2 
 paddle==1.0.1
+plotly==6.0.1

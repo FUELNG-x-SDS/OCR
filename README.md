@@ -2,12 +2,13 @@
 
 ## To-do's
 
-☑️ Clean up requirements.txt
-☑️ Create gradio UI
+☑️ Clean up requirements.txt    
+☑️ Create gradio UI  
+☑️ Data generation: Create fake data **THAT MAKES SENSE**.
+
 - [ ] CSV extraction: Have functions to gain data from csv or pdf or png --> 2 types of csv format they work on.
 - [ ] CSV extraction: Connect to a database or a centralised csv (if preferred).
-- [ ] Individual report: Layout & summary functionality.
-- [ ] Data generation: Create fake data **THAT MAKES SENSE**.
+- [ ] Individual report: Layout & summary functionality.  
 - [ ] Yearly report: Layout & graphing functionality.
 - [ ] **Define new functions for noon-report**
 - [ ] Deploy to cloud (if needed).

@@ -4,8 +4,9 @@ import pandas as pd
 import plotly.express as px
 import random
 
-
-from LNG_functions import OCR_table
+# previous OCR function
+# from LNG_functions import OCR_table
+from OCR_pdf import pdf_to_png, OCR_table
 
 
 ############################################################################
@@ -31,7 +32,7 @@ def handle_upload(file):
     
     remarks = """Remarks"""
 
-    default_columns = ["Activity EOSP", "Started", "Completed", "Duration"]
+    default_columns = ["Activity", "Started", "Completed", "Duration (in minutes)"]
     
     # Case 1: No file uploaded
     if file is None:
@@ -41,11 +42,21 @@ def handle_upload(file):
     root, extension = os.path.splitext(file)
         
     # Perform OCR on PNG and PDF files
-    if extension in [".png", ".pdf"]:
+    if extension == ".png":
         # Call OCR function
         excel_path, df = OCR_table(file)
-
         report_summary = report_summary
+
+    elif extension == ".pdf":
+        # Call OCR function
+        png_path = pdf_to_png(file)
+        if png_path != None:
+            excel_path, df = OCR_table(png_path)
+            report_summary = report_summary
+        else:
+            df = None
+
+        # df = None
 
     # Process CSV files
     elif extension == ".csv":
@@ -55,11 +66,20 @@ def handle_upload(file):
         return """Unsupported file type.\n 
                 Cannot process file.""", gr.update(visible=False), gr.update(visible=False), pd.DataFrame(columns=default_columns)
     
-    return report_summary, gr.update(visible=True), gr.update(visible=True), df
+
+    # if there are errors thrown from OCR (excel_path == None) and (df == None)
+    # bring default values for demo
+    if df == None:
+        excel_path = os.path.abspath("./default/example2.xlsx")
+        df = pd.read_excel(excel_path, skiprows=[0,1]) # omit first row
+        df.columns = default_columns
+    
+    return report_summary, gr.update(value=excel_path, visible=True) , gr.update(visible=True), df
 
 
-def get_excel():
+def get_excel(excel_path):
     print("Export to excel clicked")
+    return excel_path
 
 
 def save_db():
@@ -74,20 +94,20 @@ with gr.Blocks() as demo:
 
         # Define the outputs for individual report
         report_summary = gr.Textbox(label="Report Summary")
-        export_excel = gr.Button("Export to Excel", visible=False)
+        excel_path = gr.File(label="Statement of Facts", visible=False)
         save_to_db = gr.Button("Save to Database", visible=False)
                 
         # Define the inputs for individual report
         gr.Interface(fn=handle_upload,
                      inputs="file",
                      outputs=[report_summary, 
-                              export_excel, 
+                              excel_path, 
                               save_to_db, 
-                              gr.DataFrame(label="Statement of Facts", headers=["Activity EOSP", "Started", "Completed", "Duration"])],
+                              gr.DataFrame(label="Download Statement of Facts", headers=["Activity", "Started", "Completed", "Duration"])],
                      flagging_mode="never")
         
-        export_excel.click(get_excel)
-        save_to_db.click(save_db)
+        # export_excel.click(get_excel, excel_path, gr.File())
+        # save_to_db.click(save_db)
         
 
     with gr.Tab("Yearly Review"):

@@ -1,5 +1,7 @@
 # Ignore the output folder
 output/
+SOF_excel/
+SOF_json/
 
 # Ignore Python cache files
 __pycache__/

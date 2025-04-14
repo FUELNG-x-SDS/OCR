@@ -26,6 +26,7 @@ Proposed UI simulation workflow:
 ```shell
 git clone https://github.com/FUELNG-x-SDS/OCR.git
 cd OCR
+git checkout gradio
 ```
 
 ### Python Environment Setup

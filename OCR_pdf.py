@@ -165,7 +165,8 @@ def OCR_table(file_path):
             print(data)
 
             # Check if 'rec_text' exists and handle cases where it might not
-            rec_text = data["ocr_result"]["rec_text"]
+            # rec_text = data["ocr_result"]["rec_text"]
+            rec_text = data["overall_ocr_res"]["dt_polys"]["rec_text"]
                 
     except FileNotFoundError:
         print(f"Error: JSON file not found at {json_path}")

@@ -77,14 +77,9 @@ def handle_upload(file):
     return report_summary, gr.update(value=excel_path, visible=True) , gr.update(visible=True), df
 
 
-def get_excel(excel_path):
-    print("Export to excel clicked")
-    return excel_path
-
-
 def save_db(excel_path):
     print("Save to db clicked")
-
+    ## Save db here
 
 ############################################################################
 # UI elements
@@ -134,18 +129,18 @@ with gr.Blocks() as demo:
                 years.append(year_radio)
 
             def submit_query(data):
+                # Format it into [{vessel 1: year}, {vessel 2: year}]
+                query_input = []
+
                 for vessel, year in zip(vessels, years):
                     # Pass the query to database
                     print(data[vessel], data[year])
-
-                    # Then output the graphs
+                    query_input.append({data[vessel]: data[year]})
                     
-                    # Generate random data for the bar graph
-                    data = {"Category": ["pre-bunkering", "post-bunkering", "post-bunkering with waiting time"],
-                            "Value": [random.randint(1, 24) for _ in range(3)]}
-                    df = pd.DataFrame(data)
-                    fig = px.bar(df, x="Category", y="Value", title="Random Bar Graph")
-                    return fig
+                ### postgress query here
+
+                # Then output the graphs for each query input
+                
 
 
             submit_btn.click(fn=submit_query, 

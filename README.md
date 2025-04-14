@@ -1,3 +1,5 @@
+For Gradio version, visit: [gradio branch](https://github.com/FUELNG-x-SDS/OCR/tree/gradio)
+
 13 April Update
 3 Files added to codebase
 - LNG_prototype.py

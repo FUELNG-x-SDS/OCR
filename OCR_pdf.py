@@ -144,18 +144,18 @@ def OCR_table(file_path):
     output = pipeline.predict(
         input=file_path)
     
-    output_dir = os.path.abspath("./output/")
-    excel_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".xlsx")
-    json_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".json")
-    # excel_path = "./SOF_excel/" + os.path.splitext(os.path.basename(file_path))[0] +"/" + os.path.splitext(os.path.basename(file_path))[0] + ".xlsx"
-    # json_path = "./SOF_json/" + os.path.splitext(os.path.basename(file_path))[0] + ".json"
+
+    #excel_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".xlsx")
+    #json_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".json")
+    excel_path = "./SOF_excel/" + os.path.splitext(os.path.basename(file_path))[0] +"/" + os.path.splitext(os.path.basename(file_path))[0] + ".xlsx"
+    json_path = "./SOF_json/" + os.path.splitext(os.path.basename(file_path))[0] + ".json"
 
     # Ensure directory exists
-    os.makedirs(output_dir, exist_ok=True)
+
 
     for res in output:
-        res.save_to_xlsx(excel_path)
-        res.save_to_json(json_path, ensure_ascii=True)
+        res.save_to_xlsx("./SOF_excel/")
+        res.save_to_json("./SOF_json/", ensure_ascii=True)
     
     rec_text = None
 
@@ -200,6 +200,8 @@ def OCR_table(file_path):
         print(f"The captured ship type is: {ship_type}")
     else:
         print("No 'LNG Bunker Vessel' found in the list.")
+
+    print(excel_path)
 
     df = pd.read_excel(excel_path)
     print(df)

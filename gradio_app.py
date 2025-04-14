@@ -69,7 +69,7 @@ def handle_upload(file):
 
     # if there are errors thrown from OCR (excel_path == None) and (df == None)
     # bring default values for demo
-    if df == None:
+    if df is None or df.empty:
         excel_path = os.path.abspath("./default/example2.xlsx")
         df = pd.read_excel(excel_path, skiprows=[0,1]) # omit first row
         df.columns = default_columns
@@ -82,7 +82,7 @@ def get_excel(excel_path):
     return excel_path
 
 
-def save_db():
+def save_db(excel_path):
     print("Save to db clicked")
 
 
@@ -107,7 +107,7 @@ with gr.Blocks() as demo:
                      flagging_mode="never")
         
         # export_excel.click(get_excel, excel_path, gr.File())
-        # save_to_db.click(save_db)
+        save_to_db.click(save_db, excel_path)
         
 
     with gr.Tab("Yearly Review"):

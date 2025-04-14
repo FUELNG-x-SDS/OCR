@@ -8,6 +8,8 @@ import random
 # from LNG_functions import OCR_table
 from OCR_pdf import pdf_to_png, OCR_table
 
+from generate_graph import generate_overall_graph, generate_totaltime_graph, generate_tasktime_graph
+
 
 ############################################################################
 # helper functions
@@ -22,8 +24,7 @@ def read_textfile(filename):
 ############################################################################
 # main functions
 def handle_upload(file):
-    report_summary = """Report Summary
-                    Operation xxxx was overall a success.\n
+    report_summary = """Operation xxxx was overall a success.\n
                     LNG Bunker: xxxx\n
                     Receiving Vessel: xxxx\n
                     Date: dd/mm/yyyy\n
@@ -118,6 +119,8 @@ with gr.Blocks() as demo:
                 remove_query = gr.Button("Remove Query")
                 remove_query.click(lambda x: x - 1, dropdown_count, dropdown_count)
 
+        submit_btn = gr.Button("Submit Query")
+
         @gr.render(inputs=dropdown_count)
         def render_count(count):
             vessels = []
@@ -140,13 +143,24 @@ with gr.Blocks() as demo:
                 ### postgress query here
 
                 # Then output the graphs for each query input
-                
+                # Default graphs are randomly generated
+                for element in query_input:
+                    if list(element.keys())[0] == None:
+                        element["Value_Overall"] = []
+                        element["Value_Totaltime"] = []
+                        element["Value_Tasktime"] = []
+                    else:
+                        element["Value_Overall"] = [random.randint(1, 24) for _ in range(3)]
+                        element["Value_Totaltime"] = [random.randint(1, 24) for _ in range(1)]
+                        element["Value_Tasktime"] = [random.randint(1, 5) for _ in range(10)]
 
+                # Graph functions
+                return generate_overall_graph(query_input), generate_totaltime_graph(query_input), generate_tasktime_graph(query_input)
 
             submit_btn.click(fn=submit_query, 
                              inputs=set(vessels+years), 
-                             outputs=[gr.Plot()])
+                             outputs=[gr.Plot(), gr.Plot(), gr.Plot()])
 
-        submit_btn = gr.Button("Submit Query")
+        
         
 demo.launch()

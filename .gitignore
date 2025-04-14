@@ -2,6 +2,7 @@
 output/
 SOF_excel/
 SOF_json/
+SOF_images/
 
 # Ignore Python cache files
 __pycache__/

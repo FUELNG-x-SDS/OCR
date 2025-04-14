@@ -2,8 +2,11 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from paddlex import create_pipeline
+from datetime import timedelta
 from datetime import datetime
-# import psycopg2
+import plotly.graph_objects as go
+import gradio as gr
+import psycopg2
 import os
 import re
 import subprocess
@@ -144,18 +147,18 @@ def OCR_table(file_path):
     output = pipeline.predict(
         input=file_path)
     
-    output_dir = os.path.abspath("./output/")
-    excel_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".xlsx")
-    json_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".json")
-    # excel_path = "./SOF_excel/" + os.path.splitext(os.path.basename(file_path))[0] +"/" + os.path.splitext(os.path.basename(file_path))[0] + ".xlsx"
-    # json_path = "./SOF_json/" + os.path.splitext(os.path.basename(file_path))[0] + ".json"
+
+    #excel_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".xlsx")
+    #json_path = os.path.join(output_dir, os.path.splitext(os.path.basename(file_path))[0] + ".json")
+    excel_path = "./SOF_excel/" + os.path.splitext(os.path.basename(file_path))[0] +"/" + os.path.splitext(os.path.basename(file_path))[0] + ".xlsx"
+    json_path = "./SOF_json/" + os.path.splitext(os.path.basename(file_path))[0] + ".json"
 
     # Ensure directory exists
-    os.makedirs(output_dir, exist_ok=True)
+
 
     for res in output:
-        res.save_to_xlsx(excel_path)
-        res.save_to_json(json_path, ensure_ascii=True)
+        res.save_to_xlsx("./SOF_excel/")
+        res.save_to_json("./SOF_json/", ensure_ascii=True)
     
     rec_text = None
 
@@ -166,7 +169,7 @@ def OCR_table(file_path):
 
             # Check if 'rec_text' exists and handle cases where it might not
             # rec_text = data["ocr_result"]["rec_text"]
-            rec_text = data["overall_ocr_res"]["dt_polys"]["rec_text"]
+            rec_text = data["ocr_result"]["rec_text"]
                 
     except FileNotFoundError:
         print(f"Error: JSON file not found at {json_path}")
@@ -202,6 +205,8 @@ def OCR_table(file_path):
     else:
         print("No 'LNG Bunker Vessel' found in the list.")
 
+    print(excel_path)
+
     df = pd.read_excel(excel_path)
     print(df)
     df['Completed'] = df['Completed'].apply(clean_time)
@@ -213,6 +218,125 @@ def OCR_table(file_path):
     df.to_excel(excel_path, index=False)
 
     return excel_path, df
+
+def format_duration(minutes):
+        hours = int(minutes // 60)
+        remaining_minutes = int(minutes % 60)
+        return f"{hours}h {remaining_minutes}m"
+
+
+def upload_excel_to_postgres(excel_file_path, table_name, dbname, user, password, host, port):
+
+    try:
+        # Read the Excel file into a pandas DataFrame
+        df = pd.read_excel(excel_file_path)
+        df.loc[1, 'Completed'] = pd.to_datetime(df.loc[1, 'Completed'])
+        operation_date = df.loc[1, 'Completed']
+        df['operation_date'] = operation_date
+
+        # Connect to the PostgreSQL database
+        conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
+        cur = conn.cursor()
+
+        # Iterate through the DataFrame rows and insert into the table
+        for index, row in df.iterrows():
+            ship_type = row['ship_type']
+            operation_date = row['operation_date']
+            activity = row['Activity']
+            duration_str = row['Duration']
+
+            # Check if duration is not empty
+            if pd.notna(duration_str):
+                try:
+                    # Convert duration string to INTERVAL format
+                    hours, minutes, seconds = map(int, duration_str.split(':'))
+                    duration = f'{hours:02d}:{minutes:02d}:{seconds:02d}'
+
+                    # Create the SQL INSERT statement
+                    sql = """
+                        INSERT INTO ship_operations (ship_name, operation_date, activity, duration)
+                        VALUES (%s, %s, %s, %s::INTERVAL)
+                    """
+
+                    # Execute the SQL statement with the row values
+                    cur.execute(sql, (ship_type, operation_date, activity, duration))
+
+                except ValueError:
+                    print(f"Skipping row {index + 1} due to invalid duration format: {duration_str}")
+            else:
+                print(f"Skipping row {index + 1} due to missing or zero duration.")
+
+        conn.commit()
+
+        gr.Info("Data has been uploaded succesfully!")
+        print(f"Data from '{excel_file_path}' uploaded successfully to table '{table_name}' for ship '{ship_type}' and date '{operation_date}'.")
+        
+        pre_bunkering = ['NOR tendered by LBV','NOR tendered by RV','Mooring','Gangway landed','Hose(s) or arm connection','Hose(s) or arm pressure tested','Hose(s) or arm purged with N2','Pre-operations meeting', 'WarmESD','Opening CTS', 'Hose(s) or arm and lines cool-dow', 'Cold ESD tests', 'Open BOG valve to shore', 'Ramp-up bunker transfer']
+        post_bunkering = ['Draining of hose(s) or arm', 'Close BOG valve to shore', 'Hose(s) or arm purged','Closing CTS', 'Post operation meeting', 'Hose(s) or arm disconnected', 'Documentation completed', 'IAPH checklist part E','Pilot on board', 'Unmooring']
+
+        pre_bunkering_placeholders = ', '.join(['%s'] * len(pre_bunkering))
+        post_bunkering_placeholders = ', '.join(['%s'] * len(post_bunkering))
+        sql = f"""
+            SELECT SUM(duration)
+            FROM ship_operations
+            WHERE ship_name = %s
+                AND operation_date = %s
+                AND activity IN ({pre_bunkering_placeholders});
+        """
+
+        # Prepare the values for the query
+        values = [ship_type, operation_date ] + pre_bunkering
+
+        # Execute the SQL query
+        cur.execute(sql, values)
+        pre_bunkering_time = cur.fetchone()
+        pre_bunkering_time = pre_bunkering_time[0] if pre_bunkering_time and pre_bunkering_time[0] is not None else timedelta(seconds=0)
+        pre_bunkering_time = pre_bunkering_time.total_seconds() / 60
+
+        sql = f"""
+            SELECT SUM(duration)
+            FROM ship_operations
+            WHERE ship_name = %s
+                AND operation_date = %s
+                AND activity IN ({post_bunkering_placeholders});
+        """
+
+        # Prepare the values for the query
+        values = [ship_type, operation_date ] + post_bunkering
+
+        # Execute the SQL query
+        cur.execute(sql, values)
+        post_bunkering_time = cur.fetchone()
+        post_bunkering_time = post_bunkering_time[0] if post_bunkering_time and post_bunkering_time[0] is not None else timedelta(seconds=0)
+        post_bunkering_time = post_bunkering_time.total_seconds() / 60
+        cur.close()
+        conn.close()
+
+        labels = ["Pre-Bunkering", "Post-Bunkering"]
+        values = [pre_bunkering_time, post_bunkering_time]
+        colors = ['skyblue', 'lightcoral']
+        hover_texts = [format_duration(val) for val in values]
+
+        fig = go.Figure(data=[go.Bar(x=labels, y=values, marker_color=colors,
+                                 hovertemplate='%{x}: %{y:.2f} minutes (%{text})<extra></extra>',
+                                 text=hover_texts)])
+
+        fig.update_layout(title="Pre-VS-Post",
+                      yaxis_title="Duration (Minutes)")
+
+        return fig
+               
+    except (Exception, psycopg2.Error) as error:
+        print(f"Error: {error}")
+
+table_name = "ship_operations"  # Replace with your table name
+dbname = "FueLNG"  # Replace with your database name
+user = "postgres"        # Replace with your PostgreSQL username
+password = "postgres"    # Replace with your PostgreSQL password
+host = "localhost"            # Replace with your PostgreSQL host
+port = "5432"                # Replace with your PostgreSQL port
+excel_path = "./SOF_excel/SOF_Document_1/SOF_Document_1.xlsx"
+
 
 # pdf_path = "FueLNG_SOF_PDFs/SOF_Document_1.pdf"
 # png_path = pdf_to_png(pdf_path)

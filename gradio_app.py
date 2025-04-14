@@ -6,7 +6,7 @@ import random
 
 # previous OCR function
 # from LNG_functions import OCR_table
-from OCR_pdf import pdf_to_png, OCR_table
+from OCR_pdf import pdf_to_png, OCR_table, format_duration, upload_excel_to_postgres
 
 from generate_graph import generate_overall_graph, generate_totaltime_graph, generate_tasktime_graph
 
@@ -70,7 +70,7 @@ def handle_upload(file):
 
     # if there are errors thrown from OCR (excel_path == None) and (df == None)
     # bring default values for demo
-    if df == None:
+    if df is None or df.empty:
         excel_path = os.path.abspath("./default/example2.xlsx")
         df = pd.read_excel(excel_path, skiprows=[0,1]) # omit first row
         df.columns = default_columns
@@ -80,6 +80,16 @@ def handle_upload(file):
 
 def save_db(excel_path):
     print("Save to db clicked")
+    print(excel_path)
+
+    table_name = "ship_operations"  # Replace with your table name
+    dbname = "FueLNG"  # Replace with your database name
+    user = "postgres"        # Replace with your PostgreSQL username
+    password = "postgres"    # Replace with your PostgreSQL password
+    host = "localhost"            # Replace with your PostgreSQL host
+    port = "5432"                # Replace with your PostgreSQL port
+
+    fig = upload_excel_to_postgres(excel_path, table_name, dbname, user, password, host, port)
     ## Save db here
 
 ############################################################################

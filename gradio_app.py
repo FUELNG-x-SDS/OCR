@@ -77,9 +77,9 @@ def handle_upload(file):
     return report_summary, gr.update(value=excel_path, visible=True) , gr.update(visible=True), df
 
 
-def save_db():
+def save_db(excel_path):
     print("Save to db clicked")
-
+    ## Save db here
 
 ############################################################################
 # UI elements
@@ -102,7 +102,7 @@ with gr.Blocks() as demo:
                      flagging_mode="never")
         
         # export_excel.click(get_excel, excel_path, gr.File())
-        # save_to_db.click(save_db)
+        save_to_db.click(save_db, excel_path)
         
 
     with gr.Tab("Yearly Review"):

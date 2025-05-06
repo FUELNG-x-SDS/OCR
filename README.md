@@ -1,45 +1,48 @@
 # ABS-simulation
 
+## To-do's 
+☑️ Have OCR to extract information from both png and pdf.  
+☑️ Create gradio UI for individual report & data analysis.   
+☑️ Create mock dataset of SOF.  
+☑️ Connect PostgresSQL (database) to gradio.  
+⬜ Perform querying with postgresSQL.  
+⬜ Have an option for CSV extraction.  
+⬜ Define new functions for noon-report.  
+⬜ Deploy to cloud (if needed).
+
 ## About
+User Interface for reading pdf files via OCR and converting the results automatically via Python into a dashboard.
 
-User Interface for reading csv & pdf files and converting them into a dashboard.
+<div style="text-align: center;">
+    <img src="readme_assets/report.gif">
+    <p>Fig. 1: Dashboard interface for users to drag and drop their documents and have their contents extracted via OCR.</p>
+</div>
 
-## To-do's
-
-☑️ Clean up requirements.txt    
-☑️ Create gradio UI  
-☑️ Data generation: Create fake data **THAT MAKES SENSE**.  
-☑️ Individual report: Layout & summary functionality.  
-☑️ Yearly report: Layout & graphing functionality.
-
-- [ ] Connect postgress to gradio
-- [ ] Perform querying with postgress
-- [ ] CSV extraction: Have functions to gain data from csv or pdf or png --> 2 types of csv format they work on.
-- [ ] CSV extraction: Connect to a database or a centralised csv (if preferred).
-- [ ] **Define new functions for noon-report**
-- [ ] Deploy to cloud (if needed).
+<div style="text-align: center;">
+    <img src="readme_assets/analysis.gif">
+    <p>Fig. 2: Dashboard interface for users to query and perform simple KPIs.</p>
+</div>
 
 ## Installation
 
 ### Download code
-
 ```shell
 git clone https://github.com/FUELNG-x-SDS/OCR.git
 cd OCR
 git checkout gradio
 ```
 
-### Install ImageMagick
+### Install ImageMagick for OCR pdf support
 At https://imagemagick.org/script/download.php#windows
 
-### Install GhostScript
+### Install GhostScript for OCR pdf support
 At https://www.ghostscript.com/releases/gsdnld.html  
 <img src="readme_assets/ghostscriptinstallation.png" height=50%></img>
 
 ### Install PostgreSQL for data storing and management
 At https://www.postgresql.org/download/
 
-### Install Paddle
+### Install Paddle for OCR
 Note: [paddlex](https://github.com/PaddlePaddle/PaddleX) only works on python 3.8 - 3.12  
 You can experience the [online demo](https://aistudio.baidu.com/community/app/91661/webUI) for free.  
 
@@ -71,10 +74,3 @@ pip install paddlex==3.0rc0
 pip install requirement.txt
 python gradio_app.py
 ```
-
-
-## Possible Incompatibility Issues
-
-> ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
-> paddlenlp 3.0.0b4 requires tokenizers<0.22,>=0.21; python_version > "3.8", but you have tokenizers 0.19.1 which is incompatible.
-> gradio 5.22.0 requires aiofiles<24.0,>=22.0, but you have aiofiles 24.1.0 which is incompatible.

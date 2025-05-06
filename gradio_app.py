@@ -25,11 +25,11 @@ def read_textfile(filename):
 # main functions
 def handle_upload(file):
     report_summary = """Operation xxxx was overall a success.\n
-                    LNG Bunker: xxxx\n
-                    Receiving Vessel: xxxx\n
-                    Date: dd/mm/yyyy\n
-                    Port: xxxx\n
-                    Delivery Location: xxxx"""
+                    LNG Bunker Vessel: FUELNG VENOSA\n
+                    Terminal: SLNG Terminal\n
+                    Berth: --\n
+                    Date: 2025-04-06\n
+                    Port: Singapore, Singapore"""
     
     remarks = """Remarks"""
 

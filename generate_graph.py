@@ -3,16 +3,22 @@ from plotly.subplots import make_subplots
 import random
 
 def get_graph_title(data):
-    subplot_titles = []
+    # subplot_titles = []
+    subplot_titles = {}
     main_title = ""
     for element in data:
         vessel_name = list(element.keys())[0]
         year = element[vessel_name]
-        subplot_titles.append(vessel_name)
+        # Create a legend name where it's Vessel year
+        legend = str(vessel_name) + " " + str(year)
+        # Save the legends into subplots
+        # subplot_titles.append(vessel_name)
+        subplot_titles[vessel_name] = legend
+        # Format the main title
         main_title += f"{vessel_name}, {year} & "
     
-    # remove "&" at the end
-    main_title = main_title[:-2]
+    # Remove "& " at the end
+    main_title = main_title[:-3]
 
     return subplot_titles, main_title
 
@@ -21,12 +27,14 @@ def generate_overall_graph(data, category=["pre-bunkering", "post-bunkering", "p
     subplot_titles, main_title = get_graph_title(data)
 
     # Create subplots
-    # fig = make_subplots(rows=1, cols=2, subplot_titles=tuple(subplot_titles)) # two subplot
     fig = make_subplots(rows=1, cols=1) # one subplot
 
     # Create individual graphs
     for index, element in enumerate(data):
-        fig.add_trace(go.Bar(x=category, y=element["Value_Overall"], name=subplot_titles[index]),
+        print(subplot_titles)
+        vessel_name = list(element.keys())[0]
+        fig.add_trace(go.Bar(x=category, y=element["Value_Overall"], name=subplot_titles[vessel_name], 
+                             text=element["Value_Overall"], textposition="auto"), # Adds display value
                     row=1, col=1
         )
 
@@ -47,8 +55,10 @@ def generate_totaltime_graph(data, category=["pre-bunkering", "post-bunkering", 
 
     # Create individual graphs
     for index, element in enumerate(data):
-        vessel_name = subplot_titles[index]
-        fig.add_trace(go.Bar(x=[element[vessel_name]], y=element["Value_Totaltime"], name=vessel_name),
+        # vessel_name = subplot_titles[index]
+        vessel_name = list(element.keys())[0]
+        fig.add_trace(go.Bar(x=[element[vessel_name]], y=element["Value_Totaltime"], name=subplot_titles[vessel_name], 
+                             text=element["Value_Totaltime"], textposition="auto"), # Adds display value
                     row=1, col=1
         )
 
@@ -69,8 +79,10 @@ def generate_tasktime_graph(data, category=["Berthing & Mooring", "Hose Connecti
 
     # Create individual graphs
     for index, element in enumerate(data):
-        vessel_name = subplot_titles[index]
-        fig.add_trace(go.Bar(x=category, y=element["Value_Tasktime"], name=vessel_name),
+        # vessel_name = subplot_titles[index]
+        vessel_name = list(element.keys())[0]
+        fig.add_trace(go.Bar(x=category, y=element["Value_Tasktime"], name=subplot_titles[vessel_name], 
+                             text=element["Value_Tasktime"], textposition="auto"), # Adds display value
                     row=1, col=1
         )
 

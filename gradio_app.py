@@ -116,10 +116,10 @@ with gr.Blocks() as demo:
         save_to_db.click(save_db, excel_path)
         
 
-    with gr.Tab("Yearly Review"):
-        gr.Markdown("# Yearly Review")
+    with gr.Tab("Data Analysis"):
+        gr.Markdown("# Data Analysis")
 
-        # Define the inputs for yearly review
+        # Define the inputs for data analysis -- yearly review
         dropdown_count = gr.State(2)
         with gr.Row():
             with gr.Column():
@@ -160,9 +160,9 @@ with gr.Blocks() as demo:
                         element["Value_Totaltime"] = []
                         element["Value_Tasktime"] = []
                     else:
-                        element["Value_Overall"] = [random.randint(1, 24) for _ in range(3)]
-                        element["Value_Totaltime"] = [random.randint(1, 24) for _ in range(1)]
-                        element["Value_Tasktime"] = [random.randint(1, 5) for _ in range(10)]
+                        element["Value_Overall"] = [round(random.uniform(1, 24),2) for _ in range(3)]
+                        element["Value_Totaltime"] = [round(random.uniform(1, 24),2) for _ in range(1)]
+                        element["Value_Tasktime"] = [round(random.uniform(1, 5),2) for _ in range(10)]
 
                 # Graph functions
                 return generate_overall_graph(query_input), generate_totaltime_graph(query_input), generate_tasktime_graph(query_input)

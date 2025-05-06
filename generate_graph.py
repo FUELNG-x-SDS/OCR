@@ -3,7 +3,6 @@ from plotly.subplots import make_subplots
 import random
 
 def get_graph_title(data):
-    # subplot_titles = []
     subplot_titles = {}
     main_title = ""
     for element in data:
@@ -12,7 +11,6 @@ def get_graph_title(data):
         # Create a legend name where it's Vessel year
         legend = str(vessel_name) + " " + str(year)
         # Save the legends into subplots
-        # subplot_titles.append(vessel_name)
         subplot_titles[vessel_name] = legend
         # Format the main title
         main_title += f"{vessel_name}, {year} & "
@@ -31,7 +29,6 @@ def generate_overall_graph(data, category=["pre-bunkering", "post-bunkering", "p
 
     # Create individual graphs
     for index, element in enumerate(data):
-        print(subplot_titles)
         vessel_name = list(element.keys())[0]
         fig.add_trace(go.Bar(x=category, y=element["Value_Overall"], name=subplot_titles[vessel_name], 
                              text=element["Value_Overall"], textposition="auto"), # Adds display value
@@ -55,7 +52,6 @@ def generate_totaltime_graph(data, category=["pre-bunkering", "post-bunkering", 
 
     # Create individual graphs
     for index, element in enumerate(data):
-        # vessel_name = subplot_titles[index]
         vessel_name = list(element.keys())[0]
         fig.add_trace(go.Bar(x=[element[vessel_name]], y=element["Value_Totaltime"], name=subplot_titles[vessel_name], 
                              text=element["Value_Totaltime"], textposition="auto"), # Adds display value
@@ -79,7 +75,6 @@ def generate_tasktime_graph(data, category=["Berthing & Mooring", "Hose Connecti
 
     # Create individual graphs
     for index, element in enumerate(data):
-        # vessel_name = subplot_titles[index]
         vessel_name = list(element.keys())[0]
         fig.add_trace(go.Bar(x=category, y=element["Value_Tasktime"], name=subplot_titles[vessel_name], 
                              text=element["Value_Tasktime"], textposition="auto"), # Adds display value

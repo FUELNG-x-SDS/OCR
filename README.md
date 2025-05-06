@@ -1,4 +1,4 @@
-# ABS-simulation
+# Gradio Dashboard with OCR
 
 ## To-do's 
 ☑️ Have OCR to extract information from both png and pdf.  
